@@ -3,6 +3,7 @@ from instagram_module import get_instagram_data
 from youtube_module import extract_username, get_channel_id, get_videos
 from facebook_module import scrape_facebook
 from linkedin_module import get_linkedin_data
+import os 
 
 app = Flask(__name__)
 
@@ -70,4 +71,7 @@ def index():
     return render_template("index.html", result=result, platform=platform)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    
+port = int(os.environ.get("PORT", 10000))
+
+app.run(host="0.0.0.0", port=port)
