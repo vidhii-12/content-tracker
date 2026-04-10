@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Content Tracker</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f6f8;
+            margin: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .platform-buttons button {
+            background-color: #2ecc71;
+        }
+
+        .platform-buttons button:hover {
+            background-color: #27ae60;
+        }
+
+        input {
+            padding: 8px;
+            width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .card {
+            background: white;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .loader {
+            text-align: center;
+            color: #555;
+            display: none;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+            margin-top: 10px;
+        }
+
+        @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Content Tracker</h2>
+<p class="subtitle">Daily Social Media Updates</p>
+
+<!-- 🔘 PLATFORM BUTTONS -->
+<div class="platform-buttons" style="text-align:center;">
+    <button onclick="fillURL('https://www.instagram.com/arthconsultancyservices/')">Instagram</button>
+    <button onclick="fillURL('https://www.youtube.com/@ArthConsultancyServices')">YouTube</button>
+    <button onclick="fillURL('https://www.linkedin.com/company/arth-consultancy-services/')">LinkedIn</button>
+</div>
+
+<!-- 🔍 INPUT -->
+<form method="POST" onsubmit="showLoader()" style="text-align:center; margin-top:10px;">
+    <input type="text" id="urlInput" name="url" placeholder="Enter Profile URL" required>
+    <button type="submit">Fetch Data</button>
+</form>
+
+<div class="loader" id="loader">
+    <div class="spinner"></div>
+</div>
+
+<hr>
+
+<!-- RESULTS -->
+{% if result %}
+    <h3 style="text-align:center; color:#34495e;">
+    Showing Results for {{ platform }}
+    </h3>
+    {% for item in result %}
+        <div class="card">
+
+            
+                <p>
+                    <b>{{ loop.index }}. Caption:</b>
+
+                    <span id="short{{ loop.index }}">
+                       {{ (item.title or item.caption)[:150] }}
+                       {% if (item.title or item.caption)|length > 150 %}...{% endif %}
+                    </span>
+
+                    <span id="full{{ loop.index }}" style="display:none;">
+                       {{ item.title or item.caption }}
+                    </span>
+
+                    {% if (item.title or item.caption)|length > 150 %}
+                       <a href="javascript:void(0);" onclick="toggleText({{ loop.index }})" id="btn{{ loop.index }}">
+                          More
+                       </a>
+                    {% endif %}
+                </p>
+            
+
+            <p>
+                <b>Link:</b> 
+                <a href="{{ item.link }}" target="_blank">{{ item.link }}</a>
+            </p>
+
+
+            <p><b>Date & Time:</b> {{ item.time }}</p>
+
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% if result is defined and result|length == 0 %}
+<p style="text-align:center; color:gray;">No data found</p>
+{% endif %}
+
+<script>
+function fillURL(url) {
+    document.getElementById("urlInput").value = url;
+}
+
+function showLoader() {
+    document.getElementById("loader").style.display = "block";
+}
+
+function copyLink(link) {
+    navigator.clipboard.writeText(link);
+    alert("Link copied!");
+}
+
+function toggleText(id) {
+    var shortText = document.getElementById("short" + id);
+    var fullText = document.getElementById("full" + id);
+    var btn = document.getElementById("btn" + id);
+
+    if (fullText.style.display === "none") {
+        fullText.style.display = "inline";
+        shortText.style.display = "none";
+        btn.innerText = " Less";
+    } else {
+        fullText.style.display = "none";
+        shortText.style.display = "inline";
+        btn.innerText = " More";
+    }
+}
+
+
+</script>
+
+</body>
+</html>
